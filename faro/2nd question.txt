@@ -1,0 +1,85 @@
+docker container run  --rm -itd -p 6579:6379 --name redis redis:3.2-alpine
+
+kubectl create namespace faro
+# Create a YAML file similar to this one:
+
+#YAML file:
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: faro
+  labels:
+    name: faro
+
+# After YAML file created, run:
+kubectl apply -f faro.yaml
+
+
+# Test that the pod is running:
+Kubectl get pods | grep faro
+
+
++ -------------------------------- +
+
+# Running a pod with a service (ex: HTTP)
+kubectl exec <httpPOD> -- printenv | grep SERVICE
+
+# Verify the web service is running with the ps command
+kubectl exec -it <httpPOD> /bin/bash
+ps -ef | grep http
+
+# Check how many restarts the pod has performed
+kubectl get pods -n <myPOD>
+
+# Kill the webservice
+kubectl delete pod <myHTTPPOD>
+
++ ------------------------------------ +
+
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: frontend
+  labels:
+    app: myagenda
+    tier: frontend
+spec:
+  # modify replicas according to your case
+  replicas: 2
+  selector:
+    matchLabels:
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        tier: frontend
+    spec:
+      containers:
+      - name: myagendapod
+        image: <......>
+
+kubectl apply -f frontend.yaml
+
+kubectl get rs
+
+Kubectl delete pod <myPod>
+
+The number of pods will go back to 2 after sometime as the replica are set to 2 at minimum
+
+kubectl delete rs frontend
+
+kubectl get rs
+
++ ------------------------------------ +
+
+curl https://jsonplaceholder.typicode.com/todos/echo/get/json
+   -H "Accept: application/json"
+
+P.S. -> Try to see working: curl https://www.ibm.com/get/json -H "Accept: application/json"
+
+
+Install jq -  sudo apt-get update && sudo apt-get install jq
+
+Run: curl http://api.myapi.org/code.json | jq '.'
+
+P.S> -> Try to see working: curl http://api.open-notify.org/iss-now.json | jq '.'
